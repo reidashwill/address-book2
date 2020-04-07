@@ -39,15 +39,27 @@ AddressBook.prototype.deleteContact = function(id) {
 }
 
 //Business Logic for Contacts
-function Contact(firstName, lastName, phoneNumber, emailAddress) {
+function Contact(firstName, lastName, phoneNumber, addresses) {
   this.firstName = firstName;
   this.lastName = lastName;
   this.phoneNumber = phoneNumber;
-  this.emailAddress = emailAddress;
+  this.addresses = [];
+} 
+
+Contact.prototype.addAddress = function(address){
+  this.addresses.push(address);
 }
 
 Contact.prototype.fullName = function() {
   return this.firstName + " " + this.lastName;
+}
+
+//Business Logic for Addresses-------
+function Addresses(homeAddress, workAddress, personalEmailAddress, workEmailAddress){
+  this.homeAddress = homeAddress;
+  this.workAddress = workAddress;
+  this.personalEmailAddress = personalEmailAddress;
+  this.workEmailAddress = workEmailAddress;
 }
 
 // User Interface Logic ----------
@@ -68,7 +80,12 @@ function showContact(contactId){
   $(".first-name").html(contact.firstName);
   $(".last-name").html(contact.lastName);
   $(".phone-number").html(contact.phoneNumber);
-  $(".email-address").html(contact.emailAddress)
+  console.log(contact)
+  $(".personal-email-address").html(contact.addresses[0].personalEmailAddress);
+  $(".work-email-address").html(contact.addresses[0].workEmailAddress)
+  $(".home-address").html(contact.addresses[0].homeAddress)
+  $(".work-address").html(contact.addresses[0].workAddress)
+  
   var buttons = $("#buttons");
   buttons.empty();
   buttons.append("<button class='deleteButton' id=" + + contact.id + ">Delete</button>");
@@ -89,15 +106,36 @@ $(document).ready(function(){
   attachContactListeners();
   $("form#new-contact").submit(function(event){
     event.preventDefault();
+
     var inputtedFirstName = $("input#new-first-name").val();
     var inputtedLastName = $("input#new-last-name").val();
     var inputtedPhoneNumber = $("input#new-phone-number").val();
-    var inputtedEmailAddress = $("input#new-email-address").val();
+    var inputtedPersonalEmailAddress = $("input#new-personal-email-address").val();
+    if (inputtedPersonalEmailAddress === "") {
+      $('#pea').remove();
+     }
+    var inputtedWorkEmailAddress = $("input#new-work-email-address").val();
+    if ( inputtedWorkEmailAddress === ""){
+      $("#wea").remove();
+    }
+    var inputtedHomeAddress = $("input#new-home-address").val();
+    if (inputtedHomeAddress === "") {
+      $('#ha').remove();
+     }
+    var inputtedWorkAddress = $("input#new-work-address").val();
+    if (inputtedWorkAddress === "") {
+      $('#wa').remove();
+     }
     $("input#new-first-name").val("")
     $("input#new-last-name").val("")
     $("input#new-phone-number").val("")
-    $("input#new-email-address").val("")
-    var newContact = new Contact(inputtedFirstName, inputtedLastName, inputtedPhoneNumber, inputtedEmailAddress);
+    $("input#new-personal-email-address").val("")
+    $("input#new-work-email-address").val("")
+    $("input#new-home-address").val("")
+    $("input#new-work-address").val("")
+    var newAddresses = new Addresses(inputtedHomeAddress, inputtedWorkAddress, inputtedPersonalEmailAddress, inputtedWorkEmailAddress)
+    var newContact = new Contact(inputtedFirstName, inputtedLastName, inputtedPhoneNumber);
+    newContact.addAddress(newAddresses);
     addressBook.addContact(newContact);
     displayContactDetails(addressBook);
   })
